@@ -7,6 +7,8 @@
 [![R-CMD-check](https://github.com/ewallace/tidyqpcr/workflows/R-CMD-check/badge.svg)](https://github.com/ewallace/tidyqpcr/actions)
 <!-- badges: end -->
 
+**NOTE**: tidyqpcr is now primarily hosted at https://github.com/ropensci/tidyqpcr.
+
 # tidyqpcr - Quantitative PCR analysis in the tidyverse.
 
 *Empowering scientists to conduct reproducible, flexible, and MIQE best-practice compliant quantitative PCR analysis.*
