@@ -135,17 +135,17 @@ calculate_deltacq_bysampleid <- function(cq_df,
                              c("target_id", "sample_id","cq")))
     
     cq_df %>%
-        dplyr::group_by(.data$sample_id) %>%
+        dplyr::group_by(sample_id) %>%
         dplyr::do(calculate_normvalue(.data,
                                    ref_ids = ref_target_ids,
                                    value_name = "cq",
                                    id_name = "target_id",
                                    norm_function = norm_function)) %>%
-        dplyr::rename(ref_cq = .data$value_to_norm_by) %>%
+        dplyr::rename(ref_cq = value_to_norm_by) %>%
         dplyr::ungroup() %>%
         dplyr::mutate(
-               delta_cq    = .data$cq - .data$ref_cq,
-               rel_abund   = 2^-.data$delta_cq)
+               delta_cq    = cq - ref_cq,
+               rel_abund   = 2^ - delta_cq)
 }
 
 
@@ -228,16 +228,16 @@ calculate_deltadeltacq_bytargetid <- function(deltacq_df,
     ddcq_factor <- (-1) ^ ddcq_positive
     
     deltacq_df %>%
-        dplyr::group_by(.data$target_id) %>%
+        dplyr::group_by(target_id) %>%
         dplyr::do(calculate_normvalue(.data,
                                    ref_ids = ref_sample_ids,
                                    value_name = "delta_cq",
                                    id_name = "sample_id",
                                    norm_function = norm_function)) %>%
-        dplyr::rename(ref_delta_cq = .data$value_to_norm_by) %>%
+        dplyr::rename(ref_delta_cq = value_to_norm_by) %>%
         dplyr::ungroup() %>%
         dplyr::mutate(
                deltadelta_cq = ddcq_factor *
-                   (.data$delta_cq - .data$ref_delta_cq),
-               fold_change   = 2 ^ .data$deltadelta_cq)
+                   (delta_cq - ref_delta_cq),
+               fold_change   = 2 ^ deltadelta_cq)
 }

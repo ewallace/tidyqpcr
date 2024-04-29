@@ -6,23 +6,23 @@
 \alias{tidyqpcr-package}
 \title{tidyqpcr: Quantitative PCR Analysis with the Tidyverse}
 \description{
-This package is for reproducible quantitative PCR (qPCR) analysis using packages from the tidyverse, notably dplyr and ggplot2. It normalizes (by ddCq), summarizes, and plots pre-calculated Cq data, and plots raw amplification and melt curves from Roche lightcycler machines. It does NOT (yet) calculate Cq data from amplification curves.
+For reproducible quantitative PCR (qPCR) analysis building on packages from the ’tidyverse’, notably ’dplyr’ and ’ggplot2’. It normalizes (by ddCq), summarizes, and plots pre-calculated Cq data, and plots raw amplification and melt curves from Roche Lightcycler (tm) machines. It does NOT (yet) calculate Cq data from amplification curves.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/ewallace/tidyqpcr}
-  \item \url{https://ewallace.github.io/tidyqpcr/}
-  \item Report bugs at \url{https://github.com/ewallace/tidyqpcr/issues}
+  \item \url{https://docs.ropensci.org/tidyqpcr}
+  \item \url{https://github.com/ropensci/tidyqpcr}
+  \item Report bugs at \url{https://github.com/ropensci/tidyqpcr/issues}
 }
 
 }
 \author{
 \strong{Maintainer}: Edward Wallace \email{Edward.Wallace@ed.ac.uk}
 
-Other contributors:
+Authors:
 \itemize{
-  \item Sam Haynes \email{samuel.haynes10@gmail.com} [contributor]
+  \item Sam Haynes \email{samuel.haynes10@gmail.com}
 }
 
 }

@@ -38,13 +38,12 @@
 #' @importFrom tibble tibble as_tibble
 #' @importFrom tidyr %>%
 #' @importFrom forcats as_factor
-#' @importFrom rlang .data
 #'
 create_blank_plate <- function(well_row = LETTERS[1:16], well_col = 1:24) {
     tidyr::crossing(well_row = as_factor(well_row),
                     well_col = as_factor(well_col)) %>%
         as_tibble() %>%
-        tidyr::unite("well", .data$well_row, .data$well_col, 
+        tidyr::unite("well", well_row, well_col, 
                      sep = "", remove = FALSE)
 }
 
@@ -349,7 +348,6 @@ create_rowkey_8_in_16_plain <- function(...) {
 #'
 #' @export
 #'
-#' @importFrom rlang .data
 #' @importFrom forcats as_factor
 #'
 label_plate_rowcol <- function(plate,
@@ -363,13 +361,13 @@ label_plate_rowcol <- function(plate,
     if (!is.factor(plate$well_col) & coercefactors){
         warning("plate$well_col is not a factor. Automatically generating plate$well_col factor levels. May lead to incorrect plate plans.")
         plate <- plate %>%
-            dplyr::mutate(well_col = as_factor(.data$well_col))
+            dplyr::mutate(well_col = as_factor(well_col))
     }
     
     if (!is.factor(plate$well_row) & coercefactors){
         warning("plate$well_row is not a factor. Automatically generating plate$well_row factor levels. May lead to incorrect plate plans.")
         plate <- plate %>%
-            dplyr::mutate(well_row = as_factor(.data$well_row))
+            dplyr::mutate(well_row = as_factor(well_row))
     }
     
     if (!is.null(colkey)) {
@@ -380,7 +378,7 @@ label_plate_rowcol <- function(plate,
             message("coercing well_col to a factor with levels from plate$well_col")
             colkey <- dplyr::mutate(
                 colkey,
-                well_col = factor(.data$well_col,
+                well_col = factor(well_col,
                                   levels = levels(plate$well_col))
             )
         }
@@ -392,7 +390,7 @@ label_plate_rowcol <- function(plate,
             message("coercing well_row to a factor with levels from plate$well_row")
             rowkey <- dplyr::mutate(
                 rowkey,
-                well_row = factor(.data$well_row,
+                well_row = factor(well_row,
                                   levels = levels(plate$well_row))
             )
         }
@@ -408,7 +406,7 @@ label_plate_rowcol <- function(plate,
     if (! "prep_type" %in% names(plate)) {
         message("plate does not have variable prep_type")
     }
-    return(dplyr::arrange(plate, .data$well_row, .data$well_col))
+    return(dplyr::arrange(plate, well_row, well_col))
 }
 
 
@@ -437,7 +435,6 @@ label_plate_rowcol <- function(plate,
 #'
 #' @export
 #' @importFrom forcats as_factor
-#' @importFrom rlang .data
 #'
 display_plate <- function(plate) {
     assertthat::assert_that(
@@ -445,13 +442,13 @@ display_plate <- function(plate) {
                              c("well_row","well_col")))
     
     rowlevels <- 
-        dplyr::pull(plate, .data$well_row) %>%
+        dplyr::pull(plate, well_row) %>%
         as_factor() %>%
         levels()
 
     ggplot2::ggplot(data = plate,
-                    ggplot2::aes(x = as_factor(.data$well_col),
-                        y = as_factor(.data$well_row))) +
+                    ggplot2::aes(x = as_factor(well_col),
+                        y = as_factor(well_row))) +
         ggplot2::scale_x_discrete(expand = c(0, 0)) +
         ggplot2::scale_y_discrete(expand = c(0, 0),
                                   limits = rev(rowlevels)) +
@@ -504,7 +501,6 @@ display_plate <- function(plate) {
 #' @family plate creation functions
 #'
 #' @export
-#' @importFrom rlang .data
 #'
 display_plate_qpcr <- function(plate) {
     assertthat::assert_that(
@@ -514,12 +510,12 @@ display_plate_qpcr <- function(plate) {
                                "prep_type")))
     
     display_plate(plate) +
-        ggplot2::geom_tile(ggplot2::aes(fill = .data$target_id), 
+        ggplot2::geom_tile(ggplot2::aes(fill = target_id), 
                            alpha = 0.3) +
         ggplot2::geom_text(ggplot2::aes(label = 
-                                            paste(.data$target_id,
-                                                  .data$sample_id,
-                                                  .data$prep_type,
+                                            paste(target_id,
+                                                  sample_id,
+                                                  prep_type,
                                                   sep = "\n")),
                            size = 2.5, lineheight = 1)
 }
@@ -568,15 +564,15 @@ display_plate_value <- function(plate, value = "cq") {
     
     # check each well has one value only
     unique_well_value <- plate %>%
-        dplyr::group_by(.data$well) %>%
+        dplyr::group_by(well) %>%
         dplyr::summarise(num_well = dplyr::n()) %>%
-        dplyr::mutate(not_equal_one = .data$num_well != 1)
+        dplyr::mutate(not_equal_one = num_well != 1)
     
     assertthat::assert_that(sum(unique_well_value$not_equal_one) == 0, 
                             msg = paste0("Wells do not have unique ", value, " value."))
     
     rowlevels <- 
-        dplyr::pull(plate, .data$well_row) %>%
+        dplyr::pull(plate, well_row) %>%
         as_factor() %>%
         levels()
     

@@ -125,10 +125,10 @@ calculate_efficiency_bytargetid <- function(cq_df,
     
     if (!is.na(use_prep_types)) {
         assertthat::assert_that(assertthat::has_name(cq_df, "prep_type"))
-        cq_df <- dplyr::filter(cq_df, .data$prep_type %in% use_prep_types)
+        cq_df <- dplyr::filter(cq_df, prep_type %in% use_prep_types)
     }
     cq_df %>%
-        dplyr::group_by(.data$target_id) %>%
+        dplyr::group_by(target_id) %>%
         dplyr::do(calculate_efficiency(.data, formula = formula)) %>%
         dplyr::ungroup()
 }
