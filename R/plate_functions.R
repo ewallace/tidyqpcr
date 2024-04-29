@@ -494,9 +494,22 @@ display_plate <- function(plate) {
 #' # display full plate
 #' display_plate_qpcr(full_plate)
 #' 
+#' # display basic plate, sample_id and prep_type only
+#' display_plate_sample_id(basic_plate)
+#' 
+#'   
+#' # display basic plate, target_id only
+#' display_plate_target_id(basic_plate)
+#' 
+#' # change fill of tiles to your needs, for example
+#' library(ggplot2)
+#' display_plate_target_id(basic_plate) + 
+#'   scale_fill_brewer(type = "qual")
+#' 
 #' @family plate creation functions
 #'
 #' @export
+#' 
 #'
 display_plate_qpcr <- function(plate) {
     assertthat::assert_that(
@@ -514,6 +527,45 @@ display_plate_qpcr <- function(plate) {
                                                   prep_type,
                                                   sep = "\n")),
                            size = 2.5, lineheight = 1)
+}
+
+
+#' @describeIn display_plate_qpcr Display qPCR plate plan with sample_id and prep type only
+#'
+#' @export
+#'
+display_plate_sample_id <- function(plate) {
+    assertthat::assert_that(
+        assertthat::has_name(plate, 
+                             c("sample_id",
+                               "prep_type")))
+    
+    display_plate(plate) +
+        ggplot2::geom_tile(ggplot2::aes(fill = sample_id), 
+                           alpha = 0.3) +
+        ggplot2::geom_text(ggplot2::aes(label = 
+                                            paste(sample_id,
+                                                  prep_type,
+                                                  sep = "\n")),
+                           size = 2.5, lineheight = 1) +
+        ggplot2::theme(legend.position = "top")
+}
+
+#' @describeIn display_plate_qpcr Display qPCR plate plan with target_id only
+#'
+#' @export
+#'
+display_plate_target_id <- function(plate) {
+    assertthat::assert_that(
+        assertthat::has_name(plate, 
+                             "target_id"))
+    
+    display_plate(plate) +
+        ggplot2::geom_tile(ggplot2::aes(fill = target_id), 
+                           alpha = 0.3) +
+        ggplot2::geom_text(ggplot2::aes(label = target_id),
+                           size = 2.5, lineheight = 1) +
+        ggplot2::theme(legend.position = "top")
 }
 
 #' Display the value of each well across the plate. 

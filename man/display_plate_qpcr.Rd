@@ -2,9 +2,15 @@
 % Please edit documentation in R/plate_functions.R
 \name{display_plate_qpcr}
 \alias{display_plate_qpcr}
+\alias{display_plate_sample_id}
+\alias{display_plate_target_id}
 \title{Display qPCR plate plan with sample_id, target_id, prep_type per well}
 \usage{
 display_plate_qpcr(plate)
+
+display_plate_sample_id(plate)
+
+display_plate_target_id(plate)
 }
 \arguments{
 \item{plate}{tibble with variables well_col, well_row, sample_id, target_id,
@@ -16,6 +22,13 @@ ggplot object; major output is to plot it
 \description{
 Display qPCR plate plan with sample_id, target_id, prep_type per well
 }
+\section{Functions}{
+\itemize{
+\item \code{display_plate_sample_id()}: Display qPCR plate plan with sample_id and prep type only
+
+\item \code{display_plate_target_id()}: Display qPCR plate plan with target_id only
+
+}}
 \examples{
 
 
@@ -45,6 +58,18 @@ full_plate <- label_plate_rowcol(create_blank_plate(),
 
 # display full plate
 display_plate_qpcr(full_plate)
+
+# display basic plate, sample_id and prep_type only
+display_plate_sample_id(basic_plate)
+
+  
+# display basic plate, target_id only
+display_plate_target_id(basic_plate)
+
+# change fill of tiles to your needs, for example
+library(ggplot2)
+display_plate_target_id(basic_plate) + 
+  scale_fill_brewer(type = "qual")
 
 }
 \seealso{

@@ -1,7 +1,7 @@
 ---
 title: "Introduction to designing an experiment and setting up a plate plan in tidyqpcr"
 author: "Edward Wallace"
-date: "April 2022"
+date: "April 2024"
 output: 
   rmarkdown::html_vignette:
     toc: true
@@ -297,6 +297,24 @@ display_plate_qpcr(plate_plan96)
 
 We could print this plate map and take it into the lab as a visual aid for plate loading.
 
+# Printing sample_id and target_id only
+
+To print plate plans that display only on `sample_id` and `target_id`, again to make loading easier, tidyqpcr has helper functions
+
+```{r twocondition_96_sample_id,results="show",echo=TRUE,fig.height=6,fig.width=8}
+display_plate_sample_id(plate_plan96)
+```
+
+```{r twocondition_96_target_id,results="show",echo=TRUE,fig.height=6,fig.width=8}
+display_plate_target_id(plate_plan96) +
+    scale_fill_brewer(type = "qual", palette = 2)
+```
+
+You can customize these as you like.
+
+In the `target_id` example, we changed the colour scheme so that it looked different from the `sample_id` example, using `scale_fill_brewer()`.
+
+For even more customized plots, the `display_plate` function creates a "blank plate display" that you can add plot elements to as you prefer.
 
 # Creating plate layouts with standard designs
 
