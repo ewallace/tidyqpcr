@@ -48,7 +48,7 @@ raw_fluor_tibble <- tibble(sample_id = rep(c("S1", "S2"), each = 15),
                           program_no = 2)
 
 # remove base fluorescence from dataset
-raw_fluor_tibble \%>\%
+raw_fluor_tibble |>
     debaseline()
     
 }

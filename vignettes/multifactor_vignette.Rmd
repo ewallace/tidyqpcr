@@ -104,7 +104,7 @@ plateplan <-
 Display the plate plan using display_plate_qpcr. 
 
 ```{r display_plates,fig.height=9,fig.width=10,dependson="label_plates"}
-display_plate_qpcr(plateplan %>%
+display_plate_qpcr(plateplan |>
   mutate(sample_id = condition))
 ```
 
@@ -124,22 +124,22 @@ file_path_cq_plate1 <- system.file("extdata",
               "Edward_qPCR_TxnInhibitors_HS_2018-06-15_plate1_Cq.txt.gz",
               package = "tidyqpcr")
 
-plate1 <- file_path_cq_plate1 %>%
-  read_lightcycler_1colour_cq() %>%
-  left_join(plateplan, by = "well") %>%
+plate1 <- file_path_cq_plate1 |>
+  read_lightcycler_1colour_cq() |>
+  left_join(plateplan, by = "well") |>
   mutate(biol_rep = "1", plate = "1")
 
 file_path_cq_plate2 <- system.file("extdata",
               "Edward_qPCR_TxnInhibitors_HS_2018-06-15_plate2_Cq.txt.gz",
               package = "tidyqpcr")
 
-plate2 <- file_path_cq_plate2 %>%
-  read_lightcycler_1colour_cq() %>%
-  left_join(plateplan, by = "well") %>%
+plate2 <- file_path_cq_plate2 |>
+  read_lightcycler_1colour_cq() |>
+  left_join(plateplan, by = "well") |>
   mutate(biol_rep = "2", plate = "2")
 
 # combine data from both plates into a single data frame
-plates <- bind_rows(plate1, plate2) %>%
+plates <- bind_rows(plate1, plate2) |>
   unite(sample_id, condition, biol_rep, sep = "", remove = FALSE)
 
 summary(plates)
@@ -177,12 +177,12 @@ ggplot(data = plates) +
 
 
 ```{r normalize_counts,dependson="load_plates"}
-platesnorm <- plates %>%
-  filter(prep_type == "+RT") %>%
+platesnorm <- plates |>
+  filter(prep_type == "+RT") |>
   calculate_deltacq_bysampleid(ref_target_ids = "PGK1")
 
-platesmed <- platesnorm %>%
-  group_by(sample_id, condition, biol_rep, heat, drug, target_id) %>%
+platesmed <- platesnorm |>
+  group_by(sample_id, condition, biol_rep, heat, drug, target_id) |>
   summarize(
     delta_cq = median(delta_cq, na.rm = TRUE),
     rel_abund = median(rel_abund, na.rm = TRUE)
@@ -276,27 +276,27 @@ ggplot(data = platesmed) +
 file_path_raw_plate1 <- system.file("extdata/Edward_qPCR_TxnInhibitors_HS_2018-06-15_plate1.txt.gz",
               package = "tidyqpcr")
 
-plate1curve <- file_path_raw_plate1 %>%
-    read_lightcycler_1colour_raw() %>%
-    debaseline() %>%
-    left_join(plateplan, by = "well") %>%
+plate1curve <- file_path_raw_plate1 |>
+    read_lightcycler_1colour_raw() |>
+    debaseline() |>
+    left_join(plateplan, by = "well") |>
     mutate(biol_rep = 1, plate = 1)
 
 file_path_raw_plate2 <- system.file("extdata/Edward_qPCR_TxnInhibitors_HS_2018-06-15_plate2.txt.gz",
               package = "tidyqpcr")
 
-plate2curve <- file_path_raw_plate2 %>%
-    read_lightcycler_1colour_raw() %>%
-    debaseline() %>%
-    left_join(plateplan, by = "well") %>%
+plate2curve <- file_path_raw_plate2 |>
+    read_lightcycler_1colour_raw() |>
+    debaseline() |>
+    left_join(plateplan, by = "well") |>
     mutate(biol_rep = 2, plate = 2)
 
-platesamp <- bind_rows(plate1curve, plate2curve) %>%
+platesamp <- bind_rows(plate1curve, plate2curve) |>
   filter(program_no == 2)
 
-platesmelt <- bind_rows(plate1curve, plate2curve) %>%
-  filter(program_no == 3) %>%
-  calculate_drdt_plate() %>%
+platesmelt <- bind_rows(plate1curve, plate2curve) |>
+  filter(program_no == 3) |>
+  calculate_drdt_plate() |>
   filter(temperature >= 61)
 ```
 
@@ -304,7 +304,7 @@ platesmelt <- bind_rows(plate1curve, plate2curve) %>%
 
 ```{r plotmelt_rep1,dependson="load_amp",fig.width=12,fig.height=6}
 ggplot(
-  data = platesmelt %>%
+  data = platesmelt |>
     filter(tech_rep == 1, biol_rep == 1),
   aes(x = temperature, y = dRdT, linetype = prep_type)
 ) +
@@ -321,7 +321,7 @@ ggplot(
 
 ```{r plotmelt_rep2,dependson="load_amp",fig.width=12,fig.height=6}
 ggplot(
-  data = platesmelt %>%
+  data = platesmelt |>
     filter(tech_rep == 1, biol_rep == 2),
   aes(x = temperature, y = dRdT, linetype = prep_type)
 ) +
@@ -339,7 +339,7 @@ ggplot(
 
 ```{r plotamp_rep1,dependson="load_amp",fig.width=12,fig.height=6}
 ggplot(
-  data = platesamp %>%
+  data = platesamp |>
     filter(tech_rep == 1, biol_rep == 1),
   aes(x = cycle, y = fluor_signal, linetype = prep_type)
 ) +
@@ -353,7 +353,7 @@ ggplot(
 
 ```{r plotamp_rep2,dependson="load_amp",fig.width=12,fig.height=6}
 ggplot(
-  data = platesamp %>%
+  data = platesamp |>
     filter(tech_rep == 1, biol_rep == 2),
   aes(x = cycle, y = fluor_signal, linetype = prep_type)
 ) +

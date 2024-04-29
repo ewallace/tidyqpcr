@@ -25,7 +25,6 @@
 #'   }
 #'
 #' @export
-#' @importFrom tidyr %>%
 #' @importFrom rlang .data
 #'
 #' @examples
@@ -41,7 +40,7 @@
 #'                           program_no = 2)
 #'
 #' # remove base fluorescence from dataset
-#' raw_fluor_tibble %>%
+#' raw_fluor_tibble |>
 #'     debaseline()
 #'     
 debaseline <- function(plateamp, maxcycle = 10) {
@@ -55,13 +54,13 @@ debaseline <- function(plateamp, maxcycle = 10) {
         msg = "plateamp contains a variable called fluor_base, which breaks debaseline"
     )
     baseline <-
-        plateamp %>%
-        dplyr::group_by(.data$well) %>%
+        plateamp |>
+        dplyr::group_by(.data$well) |>
         dplyr::filter(.data$program_no == 2,
-                      .data$cycle <= maxcycle) %>%
+                      .data$cycle <= maxcycle) |>
         dplyr::summarize(fluor_base = stats::median(.data$fluor_raw))
-    plateamp %>%
-        dplyr::left_join(baseline, by = "well") %>%
+    plateamp |>
+        dplyr::left_join(baseline, by = "well") |>
         dplyr::mutate(fluor_signal = .data$fluor_raw - .data$fluor_base)
 }
 
@@ -142,7 +141,6 @@ calculate_dydx <- function(x, y, method = "spline", ...) {
 #' @family melt_curve_functions
 #'
 #' @export
-#' @importFrom tidyr %>%
 #'
 #' @examples
 #' # create simple curve
@@ -157,15 +155,15 @@ calculate_dydx <- function(x, y, method = "spline", ...) {
 #'
 #' # calculate drdt of all melt curves
 #' #----- use case 1 : using splines
-#' temp_tibble %>%
+#' temp_tibble |>
 #'     calculate_drdt_plate()
 #' 
 #' # optional arguments are passed to smooth.splines function
-#' temp_tibble %>%
+#' temp_tibble |>
 #'     calculate_drdt_plate(spar = 0.5)
 #' 
 #' #----- use case 2 : using difference between adjacent points
-#' temp_tibble %>%
+#' temp_tibble |>
 #'     calculate_drdt_plate(method = "diff")
 #'
 calculate_drdt_plate <- function(platemelt, method = "spline", ...) {
@@ -177,14 +175,14 @@ calculate_drdt_plate <- function(platemelt, method = "spline", ...) {
     if (assertthat::has_name(platemelt,"plate") ) {
         warning("platemelt has a plate column, but calculate_drdt_plate works only for single plates.")
     }
-    platemelt %>%
-        dplyr::arrange(.data$well, .data$temperature) %>%
-        dplyr::group_by(.data$well) %>%
+    platemelt |>
+        dplyr::arrange(.data$well, .data$temperature) |>
+        dplyr::group_by(.data$well) |>
         dplyr::mutate(dRdT =
                           calculate_dydx(x = .data$temperature,
                                          y = .data$fluor_raw,
                                          method = method,
                                          ...)
-        ) %>%
+        ) |>
         dplyr::ungroup()
 }

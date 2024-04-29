@@ -53,13 +53,13 @@ cq_tibble <- tibble(sample_id = "S_1",
 # normalise cq to reference target_id called 'T_norm'
 
 #----- use case 1: median reference target_id value
-cq_tibble \%>\%
+cq_tibble |>
     calculate_normvalue(ref_ids = "T_norm",
                         value_name = "cq",
                         id_name = "target_id")
 
 #----- use case 2: mean reference target_id value 
-cq_tibble \%>\%
+cq_tibble |>
     calculate_normvalue(ref_ids = "T_norm",
                         value_name = "cq",
                         id_name = "target_id",

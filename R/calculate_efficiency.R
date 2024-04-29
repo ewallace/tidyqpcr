@@ -37,11 +37,11 @@
 #' # calculate primer efficiency
 #' 
 #' #----- use case 1: include difference across replicates in model
-#' dilution_tibble %>%
+#' dilution_tibble |>
 #'     calculate_efficiency()
 #' 
 #' #----- use case 2: ignore difference across replicates
-#' dilution_tibble %>%
+#' dilution_tibble |>
 #'     calculate_efficiency(formula = cq ~ log2(dilution))
 #'
 calculate_efficiency <- function(cq_df_1, formula = cq ~ log2(dilution) + biol_rep) {
@@ -90,7 +90,6 @@ calculate_efficiency <- function(cq_df_1, formula = cq ~ log2(dilution) + biol_r
 #' @seealso calculate_efficiency
 #'
 #' @export
-#' @importFrom tidyr %>%
 #' @importFrom rlang .data
 #'
 #' @examples
@@ -111,11 +110,11 @@ calculate_efficiency <- function(cq_df_1, formula = cq ~ log2(dilution) + biol_r
 #' # calculate primer efficiency for multiple targets
 #' 
 #' #----- use case 1: include difference across replicates in model
-#' dilution_tibble %>%
+#' dilution_tibble |>
 #'     calculate_efficiency_bytargetid()
 #' 
 #' #----- use case 2: ignore difference across replicates
-#' dilution_tibble %>%
+#' dilution_tibble |>
 #'     calculate_efficiency_bytargetid(formula = cq ~ log2(dilution))
 #'
 calculate_efficiency_bytargetid <- function(cq_df,
@@ -127,8 +126,8 @@ calculate_efficiency_bytargetid <- function(cq_df,
         assertthat::assert_that(assertthat::has_name(cq_df, "prep_type"))
         cq_df <- dplyr::filter(cq_df, prep_type %in% use_prep_types)
     }
-    cq_df %>%
-        dplyr::group_by(target_id) %>%
-        dplyr::do(calculate_efficiency(.data, formula = formula)) %>%
+    cq_df |>
+        dplyr::group_by(target_id) |>
+        dplyr::do(calculate_efficiency(.data, formula = formula)) |>
         dplyr::ungroup()
 }

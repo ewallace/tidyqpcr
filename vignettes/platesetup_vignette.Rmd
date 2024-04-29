@@ -279,13 +279,15 @@ plate_plan96 <- label_plate_rowcol(
   plate = create_blank_plate(well_row = LETTERS[1:8], well_col = 1:12),
   rowkey = rowkey8,
   colkey = colkey12_twocondition
-) %>%
+) |>
   unite(sample_id, condition, biol_rep, remove = FALSE)
 
 print(plate_plan96)
 ```
 
-Again, check the help file with `?unite`. The line `unite(sample_id, condition, biol_rep, remove = FALSE)` means that we create a new variable `sample_id` from existing variables `condition` and `biol_rep`, and `remove = FALSE` means that we keep the original variables in the table as well. The syntax `%>%` from the magrittr package is a way to chain functions together.
+Again, check the help file with `?unite`.
+The line `unite(sample_id, condition, biol_rep, remove = FALSE)` means that we create a new variable `sample_id` from existing variables `condition` and `biol_rep`, and `remove = FALSE` means that we keep the original variables in the table as well. 
+The pipe operator `|>` is a way to chain functions together.
 
 Now we display the plate to check that we have everything in place:
 

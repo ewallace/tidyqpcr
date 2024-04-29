@@ -70,11 +70,11 @@ deltacq_tibble <- tibble(sample_id = rep(c("S_1","S_1","S_1", "S_norm", "S_norm"
 # calculate deltadeltacq using reference target_id called 'S_norm'
 
 #----- use case 1: median reference sample_id value
-deltacq_tibble \%>\%
+deltacq_tibble |>
     calculate_deltadeltacq_bytargetid(ref_sample_ids = "S_norm")
 
 #----- use case 2: mean reference sample_id value 
-deltacq_tibble \%>\%
+deltacq_tibble |>
     calculate_deltadeltacq_bytargetid(ref_sample_ids = "S_norm",
                                  norm_function = mean)
 

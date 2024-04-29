@@ -19,7 +19,6 @@
 #'   etc.
 #'
 #' @export
-#' @importFrom tidyr %>%
 #' @importFrom stats median
 #'
 #' @examples
@@ -38,13 +37,13 @@
 #' # normalise cq to reference target_id called 'T_norm'
 #' 
 #' #----- use case 1: median reference target_id value
-#' cq_tibble %>%
+#' cq_tibble |>
 #'     calculate_normvalue(ref_ids = "T_norm",
 #'                         value_name = "cq",
 #'                         id_name = "target_id")
 #' 
 #' #----- use case 2: mean reference target_id value 
-#' cq_tibble %>%
+#' cq_tibble |>
 #'     calculate_normvalue(ref_ids = "T_norm",
 #'                         value_name = "cq",
 #'                         id_name = "target_id",
@@ -62,8 +61,8 @@ calculate_normvalue <- function(value_df,
     
     # make subset of value_df where gene is one or more ref_ids
     value_to_norm_by <- dplyr::filter(value_df,
-                             .data[[id_name]] %in% ref_ids) %>%
-        dplyr::pull({{value_name}}) %>%
+                             .data[[id_name]] %in% ref_ids) |>
+        dplyr::pull({{value_name}}) |>
         norm_function(na.rm = TRUE)
     
     # assign summary (median) value to value_df$value_to_norm_by
@@ -98,7 +97,6 @@ calculate_normvalue <- function(value_df,
 #'   rel_abund \tab normalized ratio, \eqn{2^(-\Delta Cq)} }
 #'
 #' @export
-#' @importFrom tidyr %>%
 #' @importFrom stats median
 #' @importFrom rlang .data
 #' 
@@ -118,11 +116,11 @@ calculate_normvalue <- function(value_df,
 #' # calculate deltacq using reference target_id called 'T_norm'
 #' 
 #' #----- use case 1: median reference target_id value
-#' cq_tibble %>%
+#' cq_tibble |>
 #'     calculate_deltacq_bysampleid(ref_target_ids = "T_norm")
 #' 
 #' #----- use case 2: mean reference target_id value 
-#' cq_tibble %>%
+#' cq_tibble |>
 #'     calculate_deltacq_bysampleid(ref_target_ids = "T_norm",
 #'                                  norm_function = mean)
 #'
@@ -134,15 +132,15 @@ calculate_deltacq_bysampleid <- function(cq_df,
         assertthat::has_name(cq_df, 
                              c("target_id", "sample_id","cq")))
     
-    cq_df %>%
-        dplyr::group_by(sample_id) %>%
+    cq_df |>
+        dplyr::group_by(sample_id) |>
         dplyr::do(calculate_normvalue(.data,
                                    ref_ids = ref_target_ids,
                                    value_name = "cq",
                                    id_name = "target_id",
-                                   norm_function = norm_function)) %>%
-        dplyr::rename(ref_cq = value_to_norm_by) %>%
-        dplyr::ungroup() %>%
+                                   norm_function = norm_function)) |>
+        dplyr::rename(ref_cq = value_to_norm_by) |>
+        dplyr::ungroup() |>
         dplyr::mutate(
                delta_cq    = cq - ref_cq,
                rel_abund   = 2^ - delta_cq)
@@ -189,7 +187,6 @@ calculate_deltacq_bysampleid <- function(cq_df,
 #'   normalized fold-change ratio, \eqn{2^(-\Delta \Delta Cq)} }
 #'
 #' @export
-#' @importFrom tidyr %>%
 #' @importFrom stats median
 #'
 #' @examples
@@ -208,11 +205,11 @@ calculate_deltacq_bysampleid <- function(cq_df,
 #' # calculate deltadeltacq using reference target_id called 'S_norm'
 #' 
 #' #----- use case 1: median reference sample_id value
-#' deltacq_tibble %>%
+#' deltacq_tibble |>
 #'     calculate_deltadeltacq_bytargetid(ref_sample_ids = "S_norm")
 #' 
 #' #----- use case 2: mean reference sample_id value 
-#' deltacq_tibble %>%
+#' deltacq_tibble |>
 #'     calculate_deltadeltacq_bytargetid(ref_sample_ids = "S_norm",
 #'                                  norm_function = mean)
 #'
@@ -227,15 +224,15 @@ calculate_deltadeltacq_bytargetid <- function(deltacq_df,
     
     ddcq_factor <- (-1) ^ ddcq_positive
     
-    deltacq_df %>%
-        dplyr::group_by(target_id) %>%
+    deltacq_df |>
+        dplyr::group_by(target_id) |>
         dplyr::do(calculate_normvalue(.data,
                                    ref_ids = ref_sample_ids,
                                    value_name = "delta_cq",
                                    id_name = "sample_id",
-                                   norm_function = norm_function)) %>%
-        dplyr::rename(ref_delta_cq = value_to_norm_by) %>%
-        dplyr::ungroup() %>%
+                                   norm_function = norm_function)) |>
+        dplyr::rename(ref_delta_cq = value_to_norm_by) |>
+        dplyr::ungroup() |>
         dplyr::mutate(
                deltadelta_cq = ddcq_factor *
                    (delta_cq - ref_delta_cq),

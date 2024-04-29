@@ -61,13 +61,13 @@ wells_exclude <- c("D10","D11","D12", "H10","H11","H12") # these wells are blank
 
 plate_cq_extdata <- read_lightcycler_1colour_cq(
   system.file("extdata/Stuart_dAgr_glyS_spoVG_5S_individualWells_Cq.txt.gz",
-  package = "tidyqpcr")) %>%
-  dplyr::filter(! well %in% wells_exclude ) %>% # exclude blank wells
+  package = "tidyqpcr")) |>
+  dplyr::filter(! well %in% wells_exclude ) |> # exclude blank wells
   dplyr::select(well, sample_info, cq) 
 
 # the call to format prints all values of cq with 2 decimal places
 readr::write_tsv(
-  x = plate_cq_extdata %>%
+  x = plate_cq_extdata |>
     mutate(cq = format(cq,nsmall=2)),
   path =  system.file("extdata/Stuart_dAgr_glyS_spoVG_5S_individualWells_Cq_select.txt.gz",
                       package = "tidyqpcr")))
@@ -90,7 +90,7 @@ file_path_cq <- system.file("extdata",
                             "Stuart_dAgr_glyS_spoVG_5S_individualWells_Cq_select.txt.gz",
                             package = "tidyqpcr")
 
-plate_cq_extdata <- file_path_cq %>%
+plate_cq_extdata <- file_path_cq |>
   read_tsv()
 
 plate_cq_extdata
@@ -112,18 +112,18 @@ Note that key tidyqpcr variables: `sample_id` and `target_id`, can be defined ma
 
 Before these, we have to do a little organization. We add row and column labels for each well, so that we can later draw the plate plan and check the description. We use the tidyqpcr function `create_blank_plate_96well` to make a "blank" plate plan, then join that information to the data. The join function `inner_join` is in the `dplyr` package.
 
-We use the tidyverse pipe operator `%>%` to do all these transformations in a row, with one on each line.
+We use the pipe operator `|>` to do all these transformations in a row, with one on each line.
 
 ```{r add_sample_target_data,dependson="load_plates",results="show"}
 plate_cq_data <- 
-  create_blank_plate_96well() %>% # row and column labels for each well
-  inner_join(plate_cq_extdata, by = "well") %>% # join that info to loaded data
+  create_blank_plate_96well() |> # row and column labels for each well
+  inner_join(plate_cq_extdata, by = "well") |> # join that info to loaded data
   # next separate the sample and target information for future data analysis
   separate(sample_info,
            into = c("strain","OD","target_id"), 
            sep = " ",
-           remove = FALSE) %>%
-  unite("sample_id",strain, OD, remove = FALSE) %>% # put sample_id together
+           remove = FALSE) |>
+  unite("sample_id",strain, OD, remove = FALSE) |> # put sample_id together
   mutate(prep_type = "+RT") # add information on cDNA prep type
 
 plate_cq_data
@@ -180,7 +180,7 @@ If you use *multiple* reference target ids, the function will take the median ac
 As ever, we print the data to screen as a sanity check.
 
 ```{r normalize_counts,dependson="load_plates"}
-plate_norm <- plate_cq_data %>%
+plate_norm <- plate_cq_data |>
   calculate_deltacq_bysampleid(ref_target_ids = "5S")
 
 plate_norm
@@ -207,8 +207,8 @@ This looks quite similar to the unnormalized data plot, except as expected the r
 Having made normalized values, we use `group_by` and `summarize` from the `dplyr` package to calculate the median values of `delta_cq` and `rel_abund` for each sample. This makes a smaller table by collapsing 3 technical replicates into a single summary value for each `sample_id`-`target_id` combination.
 
 ```{r median_counts,dependson="load_plates"}
-plate_med <- plate_norm %>%
-  group_by(sample_id, strain, OD, target_id) %>%
+plate_med <- plate_norm |>
+  group_by(sample_id, strain, OD, target_id) |>
   summarize(
     delta_cq  = median(delta_cq, na.rm = TRUE),
     rel_abund = median(rel_abund, na.rm = TRUE)
@@ -286,11 +286,11 @@ This relies on a function in tidyqpcr, `calculate_deltadeltacq_bytargetid`.
 If you use *multiple* reference sample ids, the function will take the median across Cq values of *all* the reference target ids. For example, you might use multiple biological replicate samples of a single set of conditions. You can also ask the function to use a different summary, e.g. mean instead of median. See the help file `?calculate_deltadeltacq_bytargetid` for more details.
 
 ```{r calculate_deltadeltacq,dependson="normalize_counts"}
-plate_deltanorm <- plate_norm %>%
+plate_deltanorm <- plate_norm |>
   calculate_deltadeltacq_bytargetid(ref_sample_ids = "WT_OD0.5")
 
-plate_deltanorm_med <- plate_deltanorm %>%
-    group_by(sample_id, strain, OD, target_id) %>%
+plate_deltanorm_med <- plate_deltanorm |>
+    group_by(sample_id, strain, OD, target_id) |>
   summarize(
     deltadelta_cq  = median(deltadelta_cq, na.rm = TRUE),
     fold_change    = median(fold_change,   na.rm = TRUE)

@@ -41,11 +41,11 @@ dilution_tibble <- tibble(dilution = rep(c(1, 0.1, 0.001, 0.0001), 2),
 # calculate primer efficiency
 
 #----- use case 1: include difference across replicates in model
-dilution_tibble \%>\%
+dilution_tibble |>
     calculate_efficiency()
 
 #----- use case 2: ignore difference across replicates
-dilution_tibble \%>\%
+dilution_tibble |>
     calculate_efficiency(formula = cq ~ log2(dilution))
 
 }

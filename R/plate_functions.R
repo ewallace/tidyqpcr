@@ -36,13 +36,12 @@
 #'
 #' @export
 #' @importFrom tibble tibble as_tibble
-#' @importFrom tidyr %>%
 #' @importFrom forcats as_factor
 #'
 create_blank_plate <- function(well_row = LETTERS[1:16], well_col = 1:24) {
     tidyr::crossing(well_row = as_factor(well_row),
-                    well_col = as_factor(well_col)) %>%
-        as_tibble() %>%
+                    well_col = as_factor(well_col)) |>
+        as_tibble() |>
         tidyr::unite("well", well_row, well_col, 
                      sep = "", remove = FALSE)
 }
@@ -117,8 +116,6 @@ create_blank_plate_1536well <- function(
 #'
 #' @export
 #' @importFrom tibble tibble as_tibble
-
-#' @importFrom tidyr %>%
 #'
 create_colkey_6_in_24 <- function(...) {
     colkey <- tibble(well_col  = factor(1:24),
@@ -126,7 +123,7 @@ create_colkey_6_in_24 <- function(...) {
                      tech_rep  = as_factor(rep(c(1, 2, 3, 1), each = 6))
                      )
     if (!missing(...)) {
-        pieces6 <- list(...) %>% as_tibble()
+        pieces6 <- list(...) |> as_tibble()
         assertthat::assert_that(nrow(pieces6) == 6, 
                                 msg = "Some input data is not of length 6")
         pieces24 <- dplyr::bind_rows(pieces6, pieces6, pieces6, pieces6)
@@ -232,7 +229,7 @@ create_colkey_6diln_2ctrl_in_24 <- function(
 #' @export
 #' @importFrom tibble tibble as_tibble
 #' @importFrom forcats as_factor
-#' @importFrom tidyr %>%
+
 #'
 create_rowkey_4_in_16 <- function(...) {
     rowkey <- tibble(well_row = factor(LETTERS[1:16]),
@@ -240,7 +237,7 @@ create_rowkey_4_in_16 <- function(...) {
                      tech_rep = as_factor(rep(c(1, 2, 3, 1), each = 4))
     )
     if (!missing(...)) {
-        pieces4 <- list(...) %>% as_tibble()
+        pieces4 <- list(...) |> as_tibble()
         assertthat::assert_that(nrow(pieces4) == 4, 
                                 msg = "Some input data is not of length 4")
         pieces16 <- dplyr::bind_rows(pieces4, pieces4, pieces4, pieces4)
@@ -267,12 +264,11 @@ create_rowkey_4_in_16 <- function(...) {
 #'
 #' @export
 #' @importFrom tibble tibble
-#' @importFrom tidyr %>%
 #'
 create_rowkey_8_in_16_plain <- function(...) {
     rowkey <- tibble(well_row = factor(LETTERS[1:16]))
     if (!missing(...)) {
-        pieces8 <- list(...) %>% as_tibble()
+        pieces8 <- list(...) |> as_tibble()
         assertthat::assert_that(nrow(pieces8) == 8, 
                                 msg = "Some input data is not of length 8")
         pieces16 <- dplyr::bind_rows(pieces8, pieces8)
@@ -360,13 +356,13 @@ label_plate_rowcol <- function(plate,
     
     if (!is.factor(plate$well_col) & coercefactors){
         warning("plate$well_col is not a factor. Automatically generating plate$well_col factor levels. May lead to incorrect plate plans.")
-        plate <- plate %>%
+        plate <- plate |>
             dplyr::mutate(well_col = as_factor(well_col))
     }
     
     if (!is.factor(plate$well_row) & coercefactors){
         warning("plate$well_row is not a factor. Automatically generating plate$well_row factor levels. May lead to incorrect plate plans.")
-        plate <- plate %>%
+        plate <- plate |>
             dplyr::mutate(well_row = as_factor(well_row))
     }
     
@@ -442,8 +438,8 @@ display_plate <- function(plate) {
                              c("well_row","well_col")))
     
     rowlevels <- 
-        dplyr::pull(plate, well_row) %>%
-        as_factor() %>%
+        dplyr::pull(plate, well_row) |>
+        as_factor() |>
         levels()
 
     ggplot2::ggplot(data = plate,
@@ -490,7 +486,7 @@ display_plate <- function(plate) {
 #'                                                                             "T_3", "T_4", 
 #'                                                                             "T_5", "T_6",
 #'                                                                             "T_7", "T_8")), 
-#'                                   create_colkey_6diln_2ctrl_in_24() %>% 
+#'                                   create_colkey_6diln_2ctrl_in_24() |> 
 #'                                       dplyr::mutate(sample_id = paste0(dilution_nice,
 #'                                                                        "_",
 #'                                                                        tech_rep)))
@@ -538,7 +534,7 @@ display_plate_qpcr <- function(plate) {
 #' library(ggplot2)
 #' 
 #' # create 96 well plate with random values
-#' plate_randomcq <- create_blank_plate_96well() %>%
+#' plate_randomcq <- create_blank_plate_96well() |>
 #'     mutate(cq = runif(96) * 10,
 #'            deltacq = runif(96) * 2)
 #' 
@@ -563,17 +559,17 @@ display_plate_value <- function(plate, value = "cq") {
                             msg = paste0(value, " is not the name of a variable in the given plate"))
     
     # check each well has one value only
-    unique_well_value <- plate %>%
-        dplyr::group_by(well) %>%
-        dplyr::summarise(num_well = dplyr::n()) %>%
+    unique_well_value <- plate |>
+        dplyr::group_by(well) |>
+        dplyr::summarise(num_well = dplyr::n()) |>
         dplyr::mutate(not_equal_one = num_well != 1)
     
     assertthat::assert_that(sum(unique_well_value$not_equal_one) == 0, 
                             msg = paste0("Wells do not have unique ", value, " value."))
     
     rowlevels <- 
-        dplyr::pull(plate, well_row) %>%
-        as_factor() %>%
+        dplyr::pull(plate, well_row) |>
+        as_factor() |>
         levels()
     
     display_plate(plate = plate) +

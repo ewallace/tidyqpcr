@@ -26,7 +26,7 @@ library(dplyr)
 library(ggplot2)
 
 # create 96 well plate with random values
-plate_randomcq <- create_blank_plate_96well() \%>\%
+plate_randomcq <- create_blank_plate_96well() |>
     mutate(cq = runif(96) * 10,
            deltacq = runif(96) * 2)
 

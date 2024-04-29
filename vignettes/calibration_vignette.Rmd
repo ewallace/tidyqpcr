@@ -102,7 +102,7 @@ plate1plan <-
     create_blank_plate(),
     rowkey,
     create_colkey_4diln_2ctrl_in_24()
-  ) %>%
+  ) |>
   mutate(sample_id = paste(biol_rep, dilution_nice, sep = "_"))
 ```
 
@@ -111,12 +111,12 @@ plate1plan <-
 Checks that for selected technical replicate/probe/dilution combinations, the plate contains the right number of replicates.
 
 ```{r print_techreps,results="show"}
-plate1plan %>%
+plate1plan |>
   filter(tech_rep == "1",
          target_id == target_id_levels[1],
          dilution_nice == "1x")
 
-plate1plan %>%
+plate1plan |>
   filter(tech_rep == "2",
          target_id == target_id_levels[4])
 ```
@@ -144,8 +144,8 @@ file_path_cq <- system.file("extdata",
               package = "tidyqpcr")
 
 plates <- 
-  file_path_cq %>%
-  read_lightcycler_1colour_cq() %>%
+  file_path_cq |>
+  read_lightcycler_1colour_cq() |>
   right_join(plate1plan, by = "well")
 ```
 
@@ -167,7 +167,7 @@ display_plate_value(plates)
 ```
 
 Visualisation might also help to identify unwanted positional effects.
-For example, a PCR machine is broken, wells close to an edge of the plate can have different behaviour from central wells. 
+For example, if a PCR machine is broken, wells close to an edge of the plate could have different behaviour from wells in the centre. 
 
 ## Plot unnormalized data shows that -RT and NT controls are low
 
@@ -283,19 +283,19 @@ ggplot(
 file_path_raw <- system.file("extdata/Edward_qPCR_Nrd1_calibration_2019-02-02.txt.gz",
                              package = "tidyqpcr")
 
-plate1curve <- file_path_raw %>%
-    read_lightcycler_1colour_raw() %>%
-    debaseline() %>%
+plate1curve <- file_path_raw |>
+    read_lightcycler_1colour_raw() |>
+    debaseline() |>
     left_join(plate1plan, by = "well")
 
 # amplification curve is program 2
-platesamp <- plate1curve %>%
+platesamp <- plate1curve |>
   filter(program_no == 2)
 
 # melt curve is program 3 or 4, depending on cycler setting
-platesmelt <- plate1curve %>%
-  filter(program_no == 3) %>%
-  calculate_drdt_plate() %>%
+platesmelt <- plate1curve |>
+  filter(program_no == 3) |>
+  calculate_drdt_plate() |>
   filter(temperature >= 61)
 ```
 
@@ -304,7 +304,7 @@ platesmelt <- plate1curve %>%
 
 ```{r plotamp_A1,dependson="load_amp",fig.width=4,fig.height=3}
 ggplot(
-  data = platesamp %>% filter(well == "A1"),
+  data = platesamp |> filter(well == "A1"),
   aes(x = cycle, y = fluor_signal)
 ) +
   geom_line() +
@@ -317,7 +317,7 @@ Broken up by technical replicate here, to avoid overplotting.
 
 ```{r plotamp_all,dependson="load_amp",fig.height=11,fig.width=7}
 ggplot(
-  data = platesamp %>%
+  data = platesamp |>
     filter(tech_rep == "1"),
   aes(x = cycle,
       y = fluor_signal,
@@ -334,7 +334,7 @@ ggplot(
   labs(title = "All Amp Curves, tech_rep A")
 
 ggplot(
-  data = platesamp %>%
+  data = platesamp |>
     filter(tech_rep == "2"),
   aes(x = cycle,
       y = fluor_signal,
@@ -355,7 +355,7 @@ ggplot(
 
 ```{r plotmelt_A1,dependson="load_amp",fig.width=4,fig.height=1.5}
 ggplot(
-  data = platesmelt %>%
+  data = platesmelt |>
     filter(well == "A1"),
   aes(x = temperature, y = dRdT)
 ) +
@@ -371,7 +371,7 @@ Again broken up by technical replicate.
 
 ```{r plotmelt_all,dependson="load_amp",fig.height=11,fig.width=7}
 ggplot(
-  data = platesmelt %>%
+  data = platesmelt |>
     filter(tech_rep == "1"),
   aes(x = temperature,
       y = dRdT,
@@ -388,7 +388,7 @@ ggplot(
   labs(title = "All Melt Curves, tech_rep A")
 
 ggplot(
-  data = platesmelt %>%
+  data = platesmelt |>
     filter(tech_rep == "2"),
   aes(x = temperature,
       y = dRdT,
@@ -410,7 +410,7 @@ ggplot(
 
 ```{r plotmelt_zoomed,dependson="load_amp",fig.height=11,fig.width=7}
 ggplot(
-  data = platesmelt %>%
+  data = platesmelt |>
     filter(tech_rep == "1", prep_type == "+RT"),
   aes(x = temperature, y = dRdT, colour = factor(dilution))
 ) +
@@ -428,7 +428,7 @@ ggplot(
   )
 
 ggplot(
-  data = platesmelt %>%
+  data = platesmelt |>
     filter(tech_rep == "2", prep_type == "+RT"),
   aes(x = temperature, y = dRdT, colour = factor(dilution))
 ) +
@@ -451,7 +451,7 @@ ggplot(
 
 ```{r plotmelt_zoomed_nice,dependson="load_amp",fig.height=6,fig.width=4}
 ggplot(
-  data = platesmelt %>%
+  data = platesmelt |>
     filter(
       tech_rep == "1",
       prep_type == "+RT",

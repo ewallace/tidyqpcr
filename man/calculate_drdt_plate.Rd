@@ -44,15 +44,15 @@ temp_tibble <- tibble(sample_id = rep(c("S1", "S2"), each = 10),
 
 # calculate drdt of all melt curves
 #----- use case 1 : using splines
-temp_tibble \%>\%
+temp_tibble |>
     calculate_drdt_plate()
 
 # optional arguments are passed to smooth.splines function
-temp_tibble \%>\%
+temp_tibble |>
     calculate_drdt_plate(spar = 0.5)
 
 #----- use case 2 : using difference between adjacent points
-temp_tibble \%>\%
+temp_tibble |>
     calculate_drdt_plate(method = "diff")
 
 }
